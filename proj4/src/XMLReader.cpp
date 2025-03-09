@@ -8,13 +8,21 @@
 #include <iostream>
 #include <queue>
 #include <cstring>
+<<<<<<< HEAD
 #include <unordered_map>
+=======
+#include <XMLWriter.h>
+#include <StringDataSink.h>
+#include "StringDataSource.h"
+//#include "StringDataSource.cpp"
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
 
 struct CXMLReader::SImplementation {
     std::shared_ptr<CDataSource> DSource;
     XML_Parser DParser;
     std::queue<SXMLEntity> DEntityQueue;
 
+<<<<<<< HEAD
     std::string ReaderHandleEscapeSequences(std::string str) {
         std::string result = str;
         // std::cout << "Original: " << result << std::endl;
@@ -33,6 +41,8 @@ struct CXMLReader::SImplementation {
         return result;
     }
 
+=======
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
     SImplementation(std::shared_ptr<CDataSource> src) : DSource(src) {
         DParser = XML_ParserCreate(nullptr);
         XML_SetUserData(DParser, this);
@@ -55,13 +65,19 @@ struct CXMLReader::SImplementation {
         for (int i = 0; atts[i]; i += 2) {
             char* namePtr = (char*) atts[i];
             char* valuePtr = (char*) atts[i + 1];
+<<<<<<< HEAD
             std::string name = impl->ReaderHandleEscapeSequences(std::string(namePtr, strlen(namePtr)));
             std::string value = impl->ReaderHandleEscapeSequences(std::string(valuePtr, strlen(valuePtr)));
+=======
+            std::string name = std::string(namePtr, strlen(namePtr));
+            std::string value = std::string(valuePtr, strlen(valuePtr));
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
             newEntity.DAttributes.push_back(std::make_pair(name, value));
         }
         impl->DEntityQueue.push(newEntity);
     }
 
+<<<<<<< HEAD
     static void EndElementHandler(void *userData, const XML_Char *name) {
         // std::cout << "Element ended" << std::endl;
         SXMLEntity newEntity;
@@ -71,6 +87,8 @@ struct CXMLReader::SImplementation {
         impl->DEntityQueue.push(newEntity);
     }
 
+=======
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
     static void CharacterDataHandler(void *userData, const XML_Char *s, int len) {
         std::string content = std::string(s, len);
         SXMLEntity newEntity;
@@ -80,6 +98,18 @@ struct CXMLReader::SImplementation {
         impl->DEntityQueue.push(newEntity);
     }
 
+<<<<<<< HEAD
+=======
+    static void EndElementHandler(void *userData, const XML_Char *name) {
+        // std::cout << "Element ended" << std::endl;
+        SXMLEntity newEntity;
+        auto impl = static_cast<SImplementation*>(userData);
+        newEntity.DType = SXMLEntity::EType::EndElement;
+        newEntity.DNameData = name;
+        impl->DEntityQueue.push(newEntity);
+    }
+
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
     bool GetLatestEntity(SXMLEntity& entity, bool skipcdata) {  
         if (DEntityQueue.size() > 0) {
             if (skipcdata) {
@@ -87,6 +117,7 @@ struct CXMLReader::SImplementation {
                     DEntityQueue.pop();
                 }
             }
+<<<<<<< HEAD
             SXMLEntity newEntity;
             bool charData = false;
             while (DEntityQueue.front().DType == SXMLEntity::EType::CharData) {
@@ -101,6 +132,10 @@ struct CXMLReader::SImplementation {
                 entity = DEntityQueue.front();
                 DEntityQueue.pop();
             }
+=======
+            entity = DEntityQueue.front();
+            DEntityQueue.pop();
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
             return true;
         }
         return false;
@@ -141,3 +176,42 @@ bool CXMLReader::ReadEntity(SXMLEntity& entity, bool skipcdata) {
     return DImplementation->ReadEntity(entity, skipcdata);
 }
 
+<<<<<<< HEAD
+=======
+// int main() {
+//     auto InStream = std::make_shared<CStringDataSource>( "<elem attr=\"&amp;&quot;&apos;&lt;&gt;\">&amp;&quot;&apos;&lt;&gt;</elem>");
+//     CXMLReader Reader(InStream);
+//     SXMLEntity Entity;
+
+//     //Reader.ReadEntity(Entity);
+    
+//     std::cout << (Reader.ReadEntity(Entity)) << std::endl;
+//     std::cout << (Entity.DType == SXMLEntity::EType::StartElement) << std::endl;
+//     std::cout << (Entity.DNameData == "elem") << std::endl;
+//     std::cout << (Entity.DNameData) << std::endl;
+//     std::cout << (Entity.DAttributes.size() == 1) << std::endl;
+//     std::cout << (Entity.DAttributes.size()) << std::endl;
+//     std::cout << (Entity.AttributeExists("attr")) << std::endl;
+//     std::cout << (Entity.AttributeValue("attr") == "&\"'<>") << std::endl;
+//     std::cout << (Entity.AttributeValue("attr")) << std::endl;
+
+
+//     // EXPECT_EQ(Entity.DType, SXMLEntity::EType::StartElement);
+//     // EXPECT_EQ(Entity.DNameData, "elem");
+//     // EXPECT_EQ(Entity.DAttributes.size(), 1);
+//     // EXPECT_TRUE(Entity.AttributeExists("attr"));
+//     // EXPECT_EQ(Entity.AttributeValue("attr"), "&\"'<>");
+    
+//     // EXPECT_TRUE(Reader.ReadEntity(Entity));
+//     // EXPECT_EQ(Entity.DType, SXMLEntity::EType::CharData);
+//     // EXPECT_EQ(Entity.DNameData, "&\"'<>");
+//     // EXPECT_EQ(Entity.DAttributes.size(), 0);
+    
+//     // EXPECT_TRUE(Reader.ReadEntity(Entity));
+//     // EXPECT_EQ(Entity.DType, SXMLEntity::EType::EndElement);
+//     // EXPECT_EQ(Entity.DNameData, "elem");
+//     // EXPECT_EQ(Entity.DAttributes.size(), 0);
+    
+//     // EXPECT_TRUE(Reader.End());
+// }
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459

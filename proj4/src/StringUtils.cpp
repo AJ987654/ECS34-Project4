@@ -11,6 +11,12 @@ std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept {
     if (end == 0) {
         end = str.length();
     }
+<<<<<<< HEAD
+=======
+    if ((end > str.length() && end > 0) || (start > str.length() && start > 0)) {
+        return "";
+    }
+>>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
     if (start < 0) start += str.length();
     if (end < 0) end += str.length();
     return str.substr(start, end - start);
