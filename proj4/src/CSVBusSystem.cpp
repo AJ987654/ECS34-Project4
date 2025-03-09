@@ -1,8 +1,4 @@
 #include "CSVBusSystem.h"
-<<<<<<< HEAD
-=======
-#include "BusSystem.h"
->>>>>>> 63dd653a08ee146db3f56e27567c0af505614459
 #include "StreetMap.h"
 #include "DSVReader.h"
 #include "StringUtils.h"
