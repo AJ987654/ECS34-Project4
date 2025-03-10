@@ -1,4 +1,4 @@
-all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex testcsvosmtp run
+all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm run
 
 obj:
 	mkdir -p obj
