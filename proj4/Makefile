@@ -1,4 +1,4 @@
-all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm run
+all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex run
 
 obj:
 	mkdir -p obj
@@ -54,8 +54,8 @@ obj/CSVBusSystem.o: src/CSVBusSystem.cpp | obj
 obj/CSVBusSystemTest.o: testsrc/CSVBusSystemTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVBusSystemTest.o -c testsrc/CSVBusSystemTest.cpp
 
-obj/CSVBusSystemIndexer.o: src/CSVBusSystemIndexer.cpp | obj
-	g++ -std=c++17 -g -Iinclude -o obj/CSVBusSystemIndexer.o -c src/CSVBusSystemIndexer.cpp
+obj/CSVBusSystemIndexer.o: src/BusSystemIndexer.cpp | obj
+	g++ -std=c++17 -g -Iinclude -o obj/CSVBusSystemIndexer.o -c src/BusSystemIndexer.cpp
 
 obj/CSVBusSystemIndexerTest.o: testsrc/CSVBusSystemIndexerTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVBusSystemIndexerTest.o -c testsrc/CSVBusSystemIndexerTest.cpp
@@ -107,4 +107,5 @@ run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs te
 	./bin/testcsvbs
 	./bin/testosm
 	./bin/testcsvbsindex
+# ./bin/testcsvbsindex
 # ./bin/testcsvosmtp
