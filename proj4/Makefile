@@ -87,8 +87,8 @@ testcsvbs: obj/CSVBusSystem.o obj/CSVBusSystemTest.o obj/DSVReader.o obj/StringD
 testosm: obj/OpenStreetMap.o obj/OpenStreetMapTest.o obj/XMLReader.o obj/StringUtils.o obj/StringDataSource.o | bin
 	g++ -g obj/OpenStreetMap.o obj/OpenStreetMapTest.o obj/XMLReader.o obj/StringUtils.o obj/StringDataSource.o -o bin/testosm -lgtest -lgtest_main -lexpat
 
-# testcsvbsindex: obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o | bin
-# 	g++ -g obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o -o bin/testcsvbsindex -lgtest -lgtest_main
+testcsvbsindex: obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o | bin
+	g++ -g obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o -o bin/testcsvbsindex -lgtest -lgtest_main
 
 # testcsvosmtp: obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/CTransportationPlannerCommandLine.o | bin
 # 	g++ -g obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/CTransportationPlannerCommandLine.o -o bin/testcsvosmtp -lgtest -lgtest_main -lexpat
@@ -97,7 +97,7 @@ clean:
 	rm -rf obj bin
 	rm -f teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm
 
-run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm 
+run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex
 # testcsvbsindex testcsvosmtp
 	./bin/teststrutils
 	./bin/teststrdatasource
@@ -106,6 +106,5 @@ run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs te
 	./bin/testxml
 	./bin/testcsvbs
 	./bin/testosm
-
-# ./bin/testcsvbsindex
+	./bin/testcsvbsindex
 # ./bin/testcsvosmtp
