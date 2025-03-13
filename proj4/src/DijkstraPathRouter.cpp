@@ -34,7 +34,7 @@ struct CDijkstraPathRouter::SImplementation {
     // Define the graph as an unordered map of vertices
     std::unordered_map<TVertexID, Vertex> Graph;
     // Initialize the next vertex ID to 0 when the struct is created
-    TVertexID NextVertexID = 0;
+    TVertexID NextVertexID = -1;
     // Define infinity as the maximum value of a double
     const double INF = std::numeric_limits<double>::infinity();
 
