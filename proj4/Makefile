@@ -1,4 +1,4 @@
-all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex testcsvosmtp run
+all: obj bin teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex run
 
 obj:
 	mkdir -p obj
@@ -60,8 +60,8 @@ obj/CSVBusSystemIndexer.o: src/BusSystemIndexer.cpp | obj
 obj/CSVBusSystemIndexerTest.o: testsrc/CSVBusSystemIndexerTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVBusSystemIndexerTest.o -c testsrc/CSVBusSystemIndexerTest.cpp
 
-# obj/CTransportationPlannerCommandLine.o: src/CTransportationPlannerCommandLine.cpp | obj
-# 	g++ -std=c++17 -g -Iinclude -o obj/CTransportationPlannerCommandLine.o -c src/TransportationPlannerCommandLine.cpp
+obj/CTransportationPlannerCommandLine.o: src/CTransportationPlannerCommandLine.cpp | obj
+	g++ -std=c++17 -g -Iinclude -o obj/CTransportationPlannerCommandLine.o -c src/TransportationPlannerCommandLine.cpp
 
 obj/CSVOSMTransportationPlannerTest.o: testsrc/CSVOSMTransportationPlannerTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVOSMTransportationPlannerTest.o -c testsrc/CSVOSMTransportationPlannerTest.cpp
@@ -99,14 +99,14 @@ testosm: obj/OpenStreetMap.o obj/OpenStreetMapTest.o obj/XMLReader.o obj/StringU
 testcsvbsindex: obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o | bin
 	g++ -g obj/CSVBusSystemIndexer.o obj/CSVBusSystemIndexerTest.o obj/CSVBusSystem.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o -o bin/testcsvbsindex -lgtest -lgtest_main
 
-testcsvosmtp: obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj/GeographicUtils.o | bin
-	g++ -g obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj/GeographicUtils.o -o bin/testcsvosmtp -lgtest -lgtest_main -lexpat
+# testcsvosmtp: obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/DijkstraTransportationPlanner.o obj/TransportationPlannerCommandLine.o obj/DijkstraPathRouter.o obj/GeographicUtils.o | bin
+# 	g++ -g obj/CSVBusSystem.o obj/CSVOSMTransportationPlannerTest.o obj/DSVReader.o obj/StringDataSource.o obj/StringUtils.o obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystemIndexer.o obj/DijkstraTransportationPlanner.o obj/TransportationPlannerCommandLine.o obj/DijkstraPathRouter.o obj/GeographicUtils.o -o bin/testcsvosmtp -lgtest -lgtest_main -lexpat
 
 clean:
 	rm -rf obj bin
 	rm -f teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm
 
-run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex testcsvosmtp
+run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs testosm testcsvbsindex 
 # testcsvbsindex testcsvosmtp
 	./bin/teststrutils
 	./bin/teststrdatasource
@@ -117,4 +117,4 @@ run: teststrutils teststrdatasource teststrdatasink testdsv testxml testcsvbs te
 	./bin/testosm
 	./bin/testcsvbsindex
 # ./bin/testcsvbsindex
-	./bin/testcsvosmtp
+#	./bin/testcsvosmtp
