@@ -60,8 +60,8 @@ obj/CSVBusSystemIndexer.o: src/BusSystemIndexer.cpp | obj
 obj/CSVBusSystemIndexerTest.o: testsrc/CSVBusSystemIndexerTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVBusSystemIndexerTest.o -c testsrc/CSVBusSystemIndexerTest.cpp
 
-obj/CTransportationPlannerCommandLine.o: src/CTransportationPlannerCommandLine.cpp | obj
-	g++ -std=c++17 -g -Iinclude -o obj/CTransportationPlannerCommandLine.o -c src/CTransportationPlannerCommandLine.cpp
+# obj/CTransportationPlannerCommandLine.o: src/CTransportationPlannerCommandLine.cpp | obj
+# 	g++ -std=c++17 -g -Iinclude -o obj/CTransportationPlannerCommandLine.o -c src/CTransportationPlannerCommandLine.cpp
 
 obj/CSVOSMTransportationPlannerTest.o: testsrc/CSVOSMTransportationPlannerTest.cpp | obj
 	g++ -Iinclude -g -std=c++17 -o obj/CSVOSMTransportationPlannerTest.o -c testsrc/CSVOSMTransportationPlannerTest.cpp
