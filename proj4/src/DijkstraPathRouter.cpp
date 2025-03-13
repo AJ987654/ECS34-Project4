@@ -143,8 +143,10 @@ struct CDijkstraPathRouter::SImplementation {
         std::reverse(path.begin(), path.end()); // Reverse the path to get the correct order
 
         if (path.empty()) {
+            path.clear();
             return CPathRouter::NoPathExists;
         } else if (path[0] != src || path.back() != dest) {
+            path.clear();
             return CPathRouter::NoPathExists;
         }
         // Return the distance to the destination vertex
