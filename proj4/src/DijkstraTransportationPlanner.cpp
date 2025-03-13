@@ -5,6 +5,7 @@
 #include "StreetMap.h"
 #include <unordered_map>
 #include <set>
+#include <map>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -15,6 +16,7 @@ struct CDijkstraTransportationPlanner::SImplementation {
     std::unordered_map<CStreetMap::TNodeID, CPathRouter::TVertexID> NodeToVertex;
     std::unordered_map<CPathRouter::TVertexID, CStreetMap::TNodeID> VertexToNode;
     std::vector<CStreetMap::TNodeID> SortedNodeIDs;
+    std::map<std::pair<CStreetMap::TNodeID, CStreetMap::TNodeID>, CStreetMap::TWayID> NodePairToWay;
     std::shared_ptr<CStreetMap> DStreetMap;
     std::shared_ptr<CBusSystemIndexer> DBusSystemIndexer;
     double DWalkSpeed;
@@ -33,6 +35,19 @@ struct CDijkstraTransportationPlanner::SImplementation {
         return;
     }
 
+    void StoreWays(){
+        std::size_t NumWays = DStreetMap->WayCount();
+        for (std::size_t Index = 0; Index < NumWays; Index++) {
+            auto Way = DStreetMap->WayByIndex(Index);
+            std::size_t NumNodes = Way->NodeCount();
+            for (std::size_t NodeIndex = 0; NodeIndex < NumNodes - 1; NodeIndex++) {
+                auto Node1 = Way->GetNodeID(NodeIndex);
+                auto Node2 = Way->GetNodeID(NodeIndex + 1);
+                NodePairToWay[std::make_pair(Node1, Node2)] = Way->ID();
+            }
+        }
+    }
+
     SImplementation(std::shared_ptr<SConfiguration> config) {
         // Get the configuration parameters
         DStreetMap = config->StreetMap();
@@ -43,6 +58,7 @@ struct CDijkstraTransportationPlanner::SImplementation {
         DBusStopTime = config->BusStopTime();
         DPrecomputeTime = config->PrecomputeTime();
         ReadSortNodeIDs();
+        StoreWays();
     }
 
     std::size_t NodeCount() const noexcept {
@@ -113,30 +129,6 @@ struct CDijkstraTransportationPlanner::SImplementation {
         }
         return pathDist;
     }
-
-    // // Find the NodeID of the bus stop & the vertex ID 
-    // void CreateFastestPathBusEdges(std::shared_ptr<CDijkstraPathRouter> pathRouter){
-    //     auto NumRoutes = DBusSystemIndexer->RouteCount();
-    //     for (std::size_t Index = 0; Index < NumRoutes; Index++) {
-    //         auto Route = DBusSystemIndexer->RouteByIndex(Index);
-    //         auto NumStops = Route->StopCount();
-    //         for (std::size_t StopIndex = 0; StopIndex < NumStops - 1; StopIndex++) {
-    //             auto Stop1NodeID = Route->NodeID(StopIndex);
-    //             auto Stop2NodeID = Route->NodeID(StopIndex + 1);
-    //             auto Stop1Vertex = NodeToVertex.find(Stop1NodeID);
-    //             auto Stop2Vertex = NodeToVertex.find(Stop2NodeID);
-    //             if (Stop1Vertex != NodeToVertex.end() && Stop2Vertex != NodeToVertex.end()) {
-    //                 auto Stop1Location = DStreetMap->NodeByID(Stop1NodeID)->Location();
-    //                 auto Stop2Location = DStreetMap->NodeByID(Stop2NodeID)->Location();
-    //                 auto EdgeWeight = SGeographicUtils::HaversineDistanceInMiles(Stop1Location, Stop2Location);
-    //                 EdgeWeight /= DefaultSpeedLimit;
-    //                 EdgeWeight += (DBusStopTime / 3600);
-    //                 pathRouter->AddEdge(Stop1Vertex->second, Stop2Vertex->second, EdgeWeight, false);
-    //                 BusEdges.insert(std::make_pair(Stop1NodeID, Stop2NodeID));
-    //             }
-    //         }
-    //     }
-    // } 
 
     void CreateFastestPathEdgesBusWalk(std::shared_ptr<CDijkstraPathRouter> pathRouter){
         std::size_t NumWays = DStreetMap->WayCount();
@@ -230,13 +222,12 @@ struct CDijkstraTransportationPlanner::SImplementation {
         path.clear();
         if (fastestWalkBusPath < fastestBikePath) {
             auto PathLength = BusWalkPath.size();
-            for (std::size_t Index = 0; Index < PathLength - 1; Index++) {
+            path.push_back({CTransportationPlanner::ETransportationMode::Walk, VertexToNode[BusWalkPath[0]]});
+            for (std::size_t Index = 1; Index < PathLength; Index++) {
                 auto Node = VertexToNode[BusWalkPath[Index]];
-                auto NextNode = VertexToNode[BusWalkPath[Index + 1]];
-                if (DBusSystemIndexer->RouteBetweenNodeIDs(Node, NextNode)) {
+                auto PrevNode = VertexToNode[BusWalkPath[Index - 1]];
+                if (DBusSystemIndexer->RouteBetweenNodeIDs(PrevNode, Node)) {
                     path.push_back({CTransportationPlanner::ETransportationMode::Bus, Node});
-                    path.push_back({CTransportationPlanner::ETransportationMode::Bus, NextNode});
-                    Index++;
                 } else {
                     path.push_back({CTransportationPlanner::ETransportationMode::Walk, Node});
                 }
@@ -249,6 +240,55 @@ struct CDijkstraTransportationPlanner::SImplementation {
             return fastestBikePath;
         }
     }
+
+    // bool GetPathWays(const std::vector<TTripStep>& path, std::vector<CStreetMap::TWayID>& Ways) const{
+    //     auto PathLength = path.size();
+    //     Ways.clear();
+    //     for (std::size_t CurrentIndex = 1; CurrentIndex < PathLength; CurrentIndex++){
+    //         auto CurrentNodeID = path[CurrentIndex].second;
+    //         auto PrevNodeID = path[CurrentIndex - 1].second;
+    //         auto PairWayID = NodePairToWay.find(std::make_pair(PrevNodeID, CurrentNodeID));
+    //         if (PairWayID == NodePairToWay.end()) {
+    //             return false;
+    //         }
+    //         Ways.push_back(PairWayID->second);
+    //     }
+    //     return true;                         
+    // }
+    
+    // bool GetPathDescription(const std::vector<TTripStep>& path, std::vector<std::string>& desc) const {
+    //     auto PathLength = path.size();
+    //     CStreetMap::TNodeID StartNodeID = path[0].second;
+    //     desc.push_back("Start at " + GeographicUtils::ConvertLLToDMS(DStreetMap->NodeByID(StartNodeID)->Location()));
+
+        
+    //     for (std::size_t CurrentIndex = 1; CurrentIndex < PathLength; CurrentIndex++) {
+    //         auto CurrentMode = path[CurrentIndex].first;
+    //         auto CurrentNodeID = path[CurrentIndex].second;
+    //         auto PrevNodeID = path[CurrentIndex - 1].second;
+    //         auto PairWayID = NodePairToWay.find(std::make_pair(PrevNodeID, CurrentNodeID));
+    //         if (PairWayID == NodePairToWay.end()) {
+    //             return false;
+    //         }
+    //         auto WayID = PairWayID->second;
+    //         auto Way = DStreetMap->WayByID(WayID);
+    //         auto StreetName = Way->GetAttribute("name");
+
+
+        //     switch (CurrentMode) {
+        //         case CTransportationPlanner::ETransportationMode::Walk:
+                                    
+        //             modeStr = "Walk";
+        //             break;
+        //         case CTransportationPlanner::ETransportationMode::Bike:
+        //             modeStr = "Bike";
+        //             break;
+        //         case CTransportationPlanner::ETransportationMode::Bus:
+        //             modeStr = "Bus";
+        //             break;
+        //     }
+
+    // }
 };
 
 CDijkstraTransportationPlanner::CDijkstraTransportationPlanner(std::shared_ptr<SConfiguration> config) {
