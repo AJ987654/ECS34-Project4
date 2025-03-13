@@ -105,7 +105,13 @@ struct CDijkstraTransportationPlanner::SImplementation {
         auto ShortestPathRouter = std::make_shared<CDijkstraPathRouter>();
         CreateStreetNodes(ShortestPathRouter);
         CreateShortestPathEdges(ShortestPathRouter);
-        return ShortestPathRouter->FindShortestPath(NodeToVertex[src], NodeToVertex[dest], path);
+        std::vector<CStreetMap::TNodeID> tempPath;
+        auto pathDist = ShortestPathRouter->FindShortestPath(NodeToVertex[src], NodeToVertex[dest], tempPath);
+        path.clear();
+        for (auto Vertex : tempPath) {
+            path.push_back(VertexToNode[Vertex]);
+        }
+        return pathDist;
     }
 
     // // Find the NodeID of the bus stop & the vertex ID 
